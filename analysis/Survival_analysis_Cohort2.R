@@ -1,4 +1,4 @@
-# filter data for participants whose 2 years' obsearvation period
+# filter data for participants with ~2 years' obsearvation period (~94 weeks)
 # need to run the loadData.R first. Then filter by the 2nd cohort ids
 library(survival)
 library(survminer)
@@ -11,7 +11,7 @@ library(dplyr)
 library(geepack)
 library(lmtest)
 
-cohort2_ids <- read.delim("D:/data/MDD_engagement/prepared_data/COHORT_2_FIRST_660Days.tsv",header = F)[,1]
+cohort2_ids <- read.delim("D:/data/MDD_engagement/prepared_data/COHORT_2_FIRST_2Years.tsv",header = F)[,1]
 participant.dates.flt <- participant.dates.flt%>% dplyr::filter(p_id %in% cohort2_ids) 
 active.data.flt <- active.data.flt %>% dplyr::filter(p_id %in% cohort2_ids) 
 passive.data.flt <- passive.data.flt %>% dplyr::filter(p_id %in% cohort2_ids) 
