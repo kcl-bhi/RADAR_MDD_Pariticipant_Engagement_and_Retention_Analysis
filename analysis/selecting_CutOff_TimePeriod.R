@@ -52,13 +52,13 @@ ggsave(file='quantile.plot.png', plot=p, width=8, height = 6, units="in")
 
 
 # Cohort 1
-# first 301 days 
-COHORT_1_FIRST_314Days <- days.in.study %>% filter(type == 'theoritical.max' & value >=301) %>% .$p_id %>% unique()
-COHORT_1_FIRST_314Days
-write.table(COHORT_1_FIRST_314Days, file = "COHORT_1_FIRST_301Days.tsv", sep = "\t", quote = F, row.names = F, col.names = F )
+# first 43 weeks 
+COHORT_1_FIRST_301Days <- days.in.study %>% filter(type == 'theoritical.max' & value >=301) %>% .$p_id %>% unique()
+COHORT_1_FIRST_301Days
+write.table(COHORT_1_FIRST_301Days, file = "COHORT_1_FIRST_301Days.tsv", sep = "\t", quote = F, row.names = F, col.names = F )
 
 
 # Cohort 2
-# first 660 days 
+# first ~ 94 weeks 
 COHORT_2_FIRST_2Years <- days.in.study %>% filter(type == 'theoritical.max' & value >=660) %>% .$p_id %>% unique()
-write.table(COHORT_2_FIRST_2Years, file = "COHORT_2_FIRST_660Days.tsv", sep = "\t", quote = F, row.names = F, col.names = F )
+write.table(COHORT_2_FIRST_2Years, file = "COHORT_2_FIRST_2Years.tsv", sep = "\t", quote = F, row.names = F, col.names = F )
