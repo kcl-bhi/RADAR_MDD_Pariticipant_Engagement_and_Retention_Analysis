@@ -7,8 +7,8 @@ library("factoextra")
 library("tableone")
 
 
-# filter data for participants whose 2 years' obsearvation period
-cohort2_ids <- read.delim("D:/data/MDD_engagement/prepared_data/COHORT_2_FIRST_660Days.tsv",header = F)[,1]
+# filter data for participants with 2 years' obsearvation period (~94 weeks)
+cohort2_ids <- read.delim("D:/data/MDD_engagement/prepared_data/COHORT_2_FIRST_2Years.tsv",header = F)[,1]
 participant.dates.flt <- participant.dates.flt%>% dplyr::filter(p_id %in% cohort2_ids) 
 active.data.flt <- active.data.flt %>% dplyr::filter(p_id %in% cohort2_ids) 
 passive.data.flt <- passive.data.flt %>% dplyr::filter(p_id %in% cohort2_ids) 
@@ -32,23 +32,23 @@ active.data.select <- active.data.select %>% dplyr::mutate(week = floor((daysInS
                                                            biweek = floor((daysInStudy -1)/14) + 1)
 # mean of PHQ8,response, survey time, overtime
 phq8.notf.cohort2<- phq8.notf %>%
-  dplyr::filter(days<=665) %>%
+  dplyr::filter(days<=660) %>%
   dplyr::group_by(p_id) %>%
   dplyr::summarise(mean_phq8_score = mean(sum_phq8),mean_phq8_response_time = median(delta.notif.vs.start)/60,mean_phq8_total_time=median(total.time.taken))
 rses.notf.cohort2<- rses.notf %>%
-  dplyr::filter(days<=665) %>%
+  dplyr::filter(days<=660) %>%
   dplyr::group_by(p_id) %>%
   dplyr::summarise(mean_rses_score = mean(sum_rses),mean_rses_response_time = median(delta.notif.vs.start)/60,mean_rses_total_time=median(total.time.taken))
 
 
-# select active data before 665 days
+# select active data before 660 days
 active.data.select <- active.data.select %>%
-  dplyr::filter(daysInStudy <= 665 & daysInStudy>0) %>%
+  dplyr::filter(daysInStudy <= 660 & daysInStudy>0) %>%
   dplyr::group_by(p_id, biweek) %>%
   dplyr::summarise(n = n())
 
 
-tmp <- expand.grid(biweek = seq(1,48,by=1),p_id = select_participant) # num of rows = 22*614
+tmp <- expand.grid(biweek = seq(1,48,by=1),p_id = select_participant)
 active.data.select <- merge(active.data.select,tmp,all.x = T, all.y=T)
 # summarize by week
 active.data.select_01 <- active.data.select %>% mutate(active_binary = ifelse(is.na(n), 0, 1))%>%
@@ -65,7 +65,7 @@ active.data.count <-active.data.select_01 %>%
 contact.log.data.select <- merge(contact.log.data,enrollment.info)
 contact.log.data.select$days <- contact.log.data.select$date-as.Date(contact.log.data.select$enrollment_date) + 1 
 contact.log.data.select <-contact.log.data.select %>% 
-  dplyr::filter(days<=665)%>%
+  dplyr::filter(days<=660)%>%
   dplyr::group_by(p_id) %>%
   dplyr::summarise(num_contact = max(record_num))%>%
   dplyr::mutate(num_contact = ifelse(is.na(num_contact), 0, num_contact))
@@ -75,7 +75,7 @@ baseline.ids <- ids.data%>% dplyr::filter(record_num==0) %>%
   select(p_id, ids_score)
 # ids in obsearvation period
 ids.data.in301days <- merge(ids.data, enrollment.info) %>%
-  dplyr::filter(date - as.Date(enrollment_date)+1<=665 | record_num==0)
+  dplyr::filter(date - as.Date(enrollment_date)+1<=660 | record_num==0)
 ids.count <-ids.data.in301days %>%
   dplyr::group_by(p_id)%>%
   dplyr::summarise(count_ids = n())
@@ -218,16 +218,16 @@ passive.data.flt$daysInStudy <- as.Date(passive.data.flt$timestamp)-as.Date(pass
 # all participant ids of the study
 # phone data
 passive.phone.data.select <- passive.data.flt %>%
-  dplyr::filter(daysInStudy <= 665 & daysInStudy>0 & dataName=="Passive_phone") %>%
+  dplyr::filter(daysInStudy <= 660 & daysInStudy>0 & dataName=="Passive_phone") %>%
   dplyr::group_by(p_id, daysInStudy) %>%
   dplyr::summarise(n = n())
 # fitbit data
 passive.fitbit.data.select <- passive.data.flt %>%
-  dplyr::filter(daysInStudy <= 665 & daysInStudy>0 & dataName=="Passive_Fitbit") %>%
+  dplyr::filter(daysInStudy <= 660 & daysInStudy>0 & dataName=="Passive_Fitbit") %>%
   dplyr::group_by(p_id, daysInStudy) %>%
   dplyr::summarise(n = n())
 select_participant<-demog.data.flt$p_id
-tmp <- expand.grid(daysInStudy = seq(1,665,by=1),p_id = select_participant) 
+tmp <- expand.grid(daysInStudy = seq(1,660,by=1),p_id = select_participant) 
 passive.phone.data.select <- merge(passive.phone.data.select,tmp,all.x = T, all.y=T)
 passive.phone.data.select <- passive.phone.data.select %>% mutate(active = ifelse(is.na(n), 0, 1))
 passive.phone.data.select <- passive.phone.data.select%>%select(-n)
@@ -248,7 +248,7 @@ k<-4
 set.seed('3435435')
 km <- kmeans(as.matrix(tmp_phone), centers = k)
 km.cluster.allocation <- factor(km$cluster, levels = c('3','4','2','1'))
-new_label <- seq(0,664)
+new_label <- seq(0,659)
 new_label <- ifelse(new_label%%14==0, new_label/14 +1, -1)
 new_label <- ifelse(new_label!=-1, new_label*2 -1, -1)
 new_label <- as.character(new_label)
@@ -404,7 +404,7 @@ k<-4
 set.seed('3435000')
 km <- kmeans(as.matrix(tmp_fitbit), centers = k)
 km.cluster.allocation <- factor(km$cluster, c('3','1','4','2'))
-new_label <- seq(0,664)
+new_label <- seq(0,659)
 new_label <- ifelse(new_label%%14==0, new_label/14 +1, -1)
 new_label <- ifelse(new_label!=-1, new_label*2 -1, -1)
 new_label <- as.character(new_label)
